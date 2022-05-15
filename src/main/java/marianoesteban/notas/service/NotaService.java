@@ -1,5 +1,7 @@
 package marianoesteban.notas.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import marianoesteban.notas.model.Nota;
@@ -8,4 +10,6 @@ import marianoesteban.notas.model.Nota;
 public interface NotaService {
 
 	Nota findById(long idNota);
+
+	List<Nota> findAll();
 }

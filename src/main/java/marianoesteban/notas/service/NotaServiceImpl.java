@@ -1,5 +1,7 @@
 package marianoesteban.notas.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,11 @@ public class NotaServiceImpl implements NotaService {
 	public Nota findById(long idNota) {
 		return notaRepository.findById(idNota)
 				.orElseThrow(() -> new NotFoundException("No existe una nota con el ID especificado"));
+	}
+
+	@Override
+	public List<Nota> findAll() {
+		return notaRepository.findAll();
 	}
 
 }

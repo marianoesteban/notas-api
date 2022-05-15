@@ -10,6 +10,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -84,5 +87,28 @@ public class NotaControllerTest {
 	public void shouldReturn400WhenFindNotaByInvalidId() throws Exception {
 		mockMvc.perform(get("/notas/1a").contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	public void shouldFetchAllNotas() throws Exception {
+		List<Nota> notas = Arrays.asList(NOTA_1, NOTA_2);
+		when(notaService.findAll()).thenReturn(notas);
+
+		mockMvc.perform(get("/notas/").contentType(MediaType.APPLICATION_JSON))
+			.andExpect(header().string("Content-Location", "/notas/"))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.data.length()", is(2)))
+			.andExpect(jsonPath("$.data[?(@.id == 1)]").exists())
+			.andExpect(jsonPath("$.data[?(@.id == 2)]").exists());
+	}
+
+	@Test
+	public void shouldReturn204WhenNotasIsEmpty() throws Exception {
+		when(notaService.findAll()).thenReturn(Collections.emptyList());
+
+		mockMvc.perform(get("/notas/").contentType(MediaType.APPLICATION_JSON))
+			.andExpect(header().string("Content-Location", "/notas/"))
+			.andExpect(status().isNoContent());
 	}
 }

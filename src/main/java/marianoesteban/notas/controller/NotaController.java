@@ -1,5 +1,7 @@
 package marianoesteban.notas.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,5 +40,21 @@ public class NotaController {
 		return ResponseEntity.status(HttpStatus.OK)
 				.header(HttpHeaders.CONTENT_LOCATION, request.getRequestURI())
 				.body(new Envelope<Nota>(notaService.findById(idNota)));
+	}
+
+	@ApiOperation(value = "Obtener todas las notas")
+	@GetMapping("/")
+	public ResponseEntity<?> getNotas(HttpServletRequest request) {
+		List<Nota> notas = notaService.findAll();
+
+		if (notas.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT)
+					.header(HttpHeaders.CONTENT_LOCATION, request.getRequestURI())
+					.build();
+		}
+
+		return ResponseEntity.status(HttpStatus.OK)
+				.header(HttpHeaders.CONTENT_LOCATION, request.getRequestURI())
+				.body(new Envelope<List<Nota>>(notas));
 	}
 }
