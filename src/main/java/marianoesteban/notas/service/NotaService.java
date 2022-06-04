@@ -12,4 +12,6 @@ public interface NotaService {
 	Nota findById(long idNota);
 
 	List<Nota> findAll();
+
+	Nota add(Nota nota);
 }

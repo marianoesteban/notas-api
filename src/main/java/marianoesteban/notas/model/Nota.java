@@ -35,6 +35,12 @@ public class Nota {
 	public Nota() {
 	}
 
+	public Nota(String titulo, String texto, Set<Etiqueta> etiquetas) {
+		this.titulo = titulo;
+		this.texto = texto;
+		this.etiquetas = etiquetas;
+	}
+
 	public Nota(Long id, String titulo, String texto, LocalDateTime fechaCreacion, LocalDateTime fechaModificacion,
 			Set<Etiqueta> etiquetas) {
 		this.id = id;

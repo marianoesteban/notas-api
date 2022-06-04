@@ -1,5 +1,6 @@
 package marianoesteban.notas.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,14 @@ public class NotaServiceImpl implements NotaService {
 	@Override
 	public List<Nota> findAll() {
 		return notaRepository.findAll();
+	}
+
+	@Override
+	public Nota add(Nota nota) {
+		LocalDateTime currentDateTime = LocalDateTime.now();
+		nota.setFechaCreacion(currentDateTime);
+		nota.setFechaModificacion(currentDateTime);
+		return notaRepository.save(nota);
 	}
 
 }

@@ -1,8 +1,10 @@
 package marianoesteban.notas.controller;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -22,9 +24,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import marianoesteban.notas.dto.NotaDto;
 import marianoesteban.notas.exception.NotFoundException;
 import marianoesteban.notas.model.Etiqueta;
 import marianoesteban.notas.model.Nota;
+import marianoesteban.notas.service.EtiquetaService;
 import marianoesteban.notas.service.NotaService;
 
 @WebMvcTest(NotaController.class)
@@ -33,9 +39,15 @@ public class NotaControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 
+	@Autowired
+	private ObjectMapper objectMapper;
+
 	@MockBean
 	private NotaService notaService;
 	
+	@MockBean
+	private EtiquetaService etiquetaService;
+
 	private static final Etiqueta ETIQUETA_1 = new Etiqueta(1L, "mi-etiqueta");
 
 	private static final Nota NOTA_1 = new Nota(1L, "Título", "El contenido de la nota",
@@ -110,5 +122,44 @@ public class NotaControllerTest {
 		mockMvc.perform(get("/notas/").contentType(MediaType.APPLICATION_JSON))
 			.andExpect(header().string("Content-Location", "/notas/"))
 			.andExpect(status().isNoContent());
+	}
+
+	@Test
+	public void shouldCreateNewNota() throws Exception {
+		NotaDto notaDto = new NotaDto("Nueva nota", "El texto de la nota.", List.of(ETIQUETA_1.getEtiqueta()));
+		Nota nota = new Nota(1L, notaDto.getTitulo(), notaDto.getTexto(), LocalDateTime.of(2022, Month.MAY, 20, 22, 00),
+				LocalDateTime.of(2022, Month.MAY, 20, 22, 00), Set.of(ETIQUETA_1));
+
+		when(notaService.add(any(Nota.class))).thenReturn(nota);
+
+		mockMvc.perform(post("/notas/")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(notaDto)))
+			.andExpect(header().string("Location", "/notas/1"))
+			.andExpect(header().string("Content-Location", "/notas/1"))
+			.andExpect(status().isCreated())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.data.titulo", is("Nueva nota")))
+			.andExpect(jsonPath("$.data.texto", is("El texto de la nota.")));
+	}
+
+	@Test
+	public void shouldReturn400WhenTituloIsEmpty() throws Exception {
+		NotaDto notaDto = new NotaDto("", "El texto de la nota.", List.of(ETIQUETA_1.getEtiqueta()));
+
+		mockMvc.perform(post("/notas/")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(notaDto)))
+			.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	public void shouldReturn400WhenTextoIsNull() throws Exception {
+		NotaDto notaDto = new NotaDto("Nueva nota", null, List.of(ETIQUETA_1.getEtiqueta()));
+
+		mockMvc.perform(post("/notas/")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(notaDto)))
+			.andExpect(status().isBadRequest());
 	}
 }
