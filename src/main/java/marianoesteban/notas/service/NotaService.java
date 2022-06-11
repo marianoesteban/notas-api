@@ -14,4 +14,6 @@ public interface NotaService {
 	List<Nota> findAll();
 
 	Nota add(Nota nota);
+
+	Nota update(Nota nota);
 }

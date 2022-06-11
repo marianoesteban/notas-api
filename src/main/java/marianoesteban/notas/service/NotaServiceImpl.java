@@ -35,4 +35,13 @@ public class NotaServiceImpl implements NotaService {
 		return notaRepository.save(nota);
 	}
 
+	@Override
+	public Nota update(Nota nota) {
+		Nota oldNota = notaRepository.findById(nota.getId())
+				.orElseThrow(() -> new NotFoundException("No existe una nota con el ID especificado"));
+		nota.setFechaCreacion(oldNota.getFechaCreacion());
+		nota.setFechaModificacion(LocalDateTime.now());
+		return notaRepository.save(nota);
+	}
+
 }

@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -161,5 +162,24 @@ public class NotaControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(notaDto)))
 			.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	public void shouldModifyNota() throws Exception {
+		NotaDto notaDto = new NotaDto("Nuevo título", "El texto modificado.", List.of(ETIQUETA_1.getEtiqueta()));
+		Nota nota = new Nota(1L, notaDto.getTitulo(), notaDto.getTexto(), LocalDateTime.of(2022, Month.MAY, 20, 22, 00),
+				LocalDateTime.of(2022, Month.JUNE, 10, 21, 31), Set.of(ETIQUETA_1));
+
+		when(notaService.update(any(Nota.class))).thenReturn(nota);
+
+		mockMvc.perform(put("/notas/1")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(notaDto)))
+			.andExpect(header().string("Content-Location", "/notas/1"))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.data.id", is(1)))
+			.andExpect(jsonPath("$.data.titulo", is("Nuevo título")))
+			.andExpect(jsonPath("$.data.texto", is("El texto modificado.")));
 	}
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -81,6 +82,19 @@ public class NotaController {
 				.header(HttpHeaders.LOCATION, locationUri)
 				.header(HttpHeaders.CONTENT_LOCATION, locationUri)
 				.body(new Envelope<Nota>(newNota));
+	}
+
+	@ApiOperation(value = "Modificar una nota")
+	@PutMapping("/{idNota}")
+	public ResponseEntity<?> updateNota(@PathVariable("idNota") long idNota, @Valid @RequestBody NotaDto notaDto,
+			HttpServletRequest request) {
+		Nota nota = toNota(notaDto);
+		nota.setId(idNota);
+		Nota updatedNota = notaService.update(nota);
+
+		return ResponseEntity.status(HttpStatus.OK)
+				.header(HttpHeaders.CONTENT_LOCATION, request.getRequestURI())
+				.body(new Envelope<Nota>(updatedNota));
 	}
 
 	private Nota toNota(NotaDto notaDto) {
