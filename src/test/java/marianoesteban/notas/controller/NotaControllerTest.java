@@ -2,7 +2,9 @@ package marianoesteban.notas.controller;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -181,5 +183,13 @@ public class NotaControllerTest {
 			.andExpect(jsonPath("$.data.id", is(1)))
 			.andExpect(jsonPath("$.data.titulo", is("Nuevo título")))
 			.andExpect(jsonPath("$.data.texto", is("El texto modificado.")));
+	}
+
+	@Test
+	public void shouldDeleteNota() throws Exception {
+		doNothing().when(notaService).delete(1L);
+
+		mockMvc.perform(delete("/notas/1").contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk());
 	}
 }

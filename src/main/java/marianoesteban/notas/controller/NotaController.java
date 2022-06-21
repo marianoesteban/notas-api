@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -95,6 +96,14 @@ public class NotaController {
 		return ResponseEntity.status(HttpStatus.OK)
 				.header(HttpHeaders.CONTENT_LOCATION, request.getRequestURI())
 				.body(new Envelope<Nota>(updatedNota));
+	}
+
+	@ApiOperation(value = "Eliminar nota")
+	@DeleteMapping("/{idNota}")
+	public ResponseEntity<?> deleteNota(@PathVariable("idNota") long idNota) {
+		notaService.delete(idNota);
+
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	private Nota toNota(NotaDto notaDto) {

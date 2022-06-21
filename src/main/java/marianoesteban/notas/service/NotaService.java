@@ -16,4 +16,6 @@ public interface NotaService {
 	Nota add(Nota nota);
 
 	Nota update(Nota nota);
+
+	void delete(long idNota);
 }

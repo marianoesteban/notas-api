@@ -44,4 +44,13 @@ public class NotaServiceImpl implements NotaService {
 		return notaRepository.save(nota);
 	}
 
+	@Override
+	public void delete(long idNota) {
+		// chequear si existe una nota con ese id
+		Nota nota = notaRepository.findById(idNota)
+				.orElseThrow(() -> new NotFoundException("No existe una nota con el ID especificado"));
+
+		notaRepository.delete(nota);
+	}
+
 }
