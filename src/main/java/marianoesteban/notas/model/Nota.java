@@ -20,8 +20,10 @@ public class Nota {
 	@Column(name = "id_nota")
 	private Long id;
 
+	@Column(length = 100)
 	private String titulo;
 
+	@Column(length = 600)
 	private String texto;
 
 	private LocalDateTime fechaCreacion;

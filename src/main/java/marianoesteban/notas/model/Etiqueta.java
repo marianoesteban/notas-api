@@ -17,6 +17,7 @@ public class Etiqueta {
 	@Column(name = "id_etiqueta")
 	private Long id;
 	
+	@Column(length = 45)
 	private String etiqueta;
 	
 	@ManyToMany(mappedBy = "etiquetas")
