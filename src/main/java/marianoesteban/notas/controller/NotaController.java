@@ -1,5 +1,7 @@
 package marianoesteban.notas.controller;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -52,7 +54,7 @@ public class NotaController {
 	public ResponseEntity<?> getNotaById(@PathVariable("idNota") long idNota, HttpServletRequest request) {
 		return ResponseEntity.status(HttpStatus.OK)
 				.header(HttpHeaders.CONTENT_LOCATION, request.getRequestURI())
-				.body(new Envelope<Nota>(notaService.findById(idNota)));
+				.body(new Envelope<NotaDto>(toDto(notaService.findById(idNota))));
 	}
 
 	@ApiOperation(value = "Obtener todas las notas")
@@ -66,9 +68,13 @@ public class NotaController {
 					.build();
 		}
 
+		List<NotaDto> notaDtos = new ArrayList<NotaDto>();
+		for (Nota nota : notas)
+			notaDtos.add(toDto(nota));
+
 		return ResponseEntity.status(HttpStatus.OK)
 				.header(HttpHeaders.CONTENT_LOCATION, request.getRequestURI())
-				.body(new Envelope<List<Nota>>(notas));
+				.body(new Envelope<List<NotaDto>>(notaDtos));
 	}
 
 	@ApiOperation(value = "Crear una nueva nota")
@@ -82,7 +88,7 @@ public class NotaController {
 		return ResponseEntity.status(HttpStatus.CREATED)
 				.header(HttpHeaders.LOCATION, locationUri)
 				.header(HttpHeaders.CONTENT_LOCATION, locationUri)
-				.body(new Envelope<Nota>(newNota));
+				.body(new Envelope<NotaDto>(toDto(newNota)));
 	}
 
 	@ApiOperation(value = "Modificar una nota")
@@ -95,7 +101,7 @@ public class NotaController {
 
 		return ResponseEntity.status(HttpStatus.OK)
 				.header(HttpHeaders.CONTENT_LOCATION, request.getRequestURI())
-				.body(new Envelope<Nota>(updatedNota));
+				.body(new Envelope<NotaDto>(toDto(updatedNota)));
 	}
 
 	@ApiOperation(value = "Eliminar nota")
@@ -104,6 +110,18 @@ public class NotaController {
 		notaService.delete(idNota);
 
 		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	private NotaDto toDto(Nota nota) {
+		Long id = nota.getId();
+		String titulo = nota.getTitulo();
+		String texto = nota.getTexto();
+		LocalDateTime fechaCreacion = nota.getFechaCreacion();
+		LocalDateTime fechaModificacion = nota.getFechaModificacion();
+		List<String> etiquetas = new ArrayList<String>();
+		for (Etiqueta etiqueta : nota.getEtiquetas())
+			etiquetas.add(etiqueta.getEtiqueta());
+		return new NotaDto(id, titulo, texto, fechaCreacion, fechaModificacion, etiquetas);
 	}
 
 	private Nota toNota(NotaDto notaDto) {

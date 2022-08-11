@@ -1,6 +1,7 @@
 package marianoesteban.notas.model;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -59,6 +60,7 @@ public class Nota {
 		this.texto = texto;
 		this.fechaCreacion = fechaCreacion;
 		this.fechaModificacion = fechaModificacion;
+		this.etiquetas = Collections.emptySet();
 	}
 
 	public Long getId() {

@@ -1,5 +1,6 @@
 package marianoesteban.notas.controller;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -87,7 +88,7 @@ public class NotaControllerTest {
 			.andExpect(jsonPath("$.data.texto", is("Esta nota contiene etiquetas")))
 			.andExpect(jsonPath("$.data.fechaCreacion", is("2022-03-18T20:15:00")))
 			.andExpect(jsonPath("$.data.fechaModificacion", is("2022-04-17T22:01:00")))
-			.andExpect(jsonPath("$.data.etiquetas[?(@.id == 1)][?(@.etiqueta == 'mi-etiqueta')]").exists());
+			.andExpect(jsonPath("$.data.etiquetas[*]", hasItem("mi-etiqueta")));
 	}
 	
 	@Test
